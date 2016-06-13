@@ -1,4 +1,5 @@
 require 'redmine'
+require 'zendesk_api'
 
 class ZendeskListener < Redmine::Hook::Listener
   # We need this helper for rendering the detail stuff, and the accessors to fake it out
@@ -6,6 +7,15 @@ class ZendeskListener < Redmine::Hook::Listener
   attr_accessor :controller, :request
   
   def controller_issues_edit_after_save(context)
+    zendesk_client = ZendeskAPI::Client.new do |config|
+      subdomain = Setting.plugin_redmine_zendesk_ticket_updater['zendesk_subdomain']
+      config.url = "https://#{subdomain}.zendesk.com/api/v2" # e.g. https://mydesk.zendesk.com/api/v2
+      config.username = Setting.plugin_redmine_zendesk_ticket_updater['zendesk_username']
+      config.password = Setting.plugin_redmine_zendesk_ticket_updater['zendesk_password']
+      config.retry = true
+    end
+
+
     puts context.inspect
     self.controller = context[:controller]
     self.request = context[:request]
@@ -38,21 +48,9 @@ class ZendeskListener < Redmine::Hook::Listener
         comment << journal.notes
       end
 
-      client = zendesk_client
-      ticket = ZendeskAPI::Ticket.find(client, :id => zendesk_id)
-      ticket.comment = ZendeskAPI::Ticket::Comment.new(client, :value => comment, :public => false)
+      ticket = ZendeskAPI::Ticket.find(zendesk_client, :id => zendesk_id)
+      ticket.comment = ZendeskAPI::Ticket::Comment.new(zendesk_client, :value => comment, :public => false)
       ticket.save!
-    end
-
-    def zendesk_client
-      require 'zendesk_api'
-      ZendeskAPI::Client.new do |config|
-        subdomain = Setting.plugin_redmine_zendesk_ticket_updater['zendesk_subdomain']
-        config.url = "https://#{subdomain}.zendesk.com/api/v2" # e.g. https://mydesk.zendesk.com/api/v2
-        config.username = Setting.plugin_redmine_zendesk_ticket_updater['zendesk_username']
-        config.password = Setting.plugin_redmine_zendesk_ticket_updater['zendesk_password']
-        config.retry = true
-      end
     end
   end
 end
