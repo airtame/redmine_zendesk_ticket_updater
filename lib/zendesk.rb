@@ -18,7 +18,7 @@ class ZendeskListener < Redmine::Hook::Listener
     self.controller = context[:controller]
     self.request = context[:request]
     
-    custom_field = CustomField.find(Setting.plugin_redmine_zendesk_ticket_updater['field'])
+    custom_field = CustomField.find(Setting.plugin_redmine_zendesk_ticket_updater['zendesk_custom_field_id'])
     return unless custom_field
     
     journal = context[:journal]
