@@ -18,7 +18,7 @@ class ZendeskListener < Redmine::Hook::Listener
     self.controller = context[:controller]
     self.request = context[:request]
     
-    custom_field = CustomField.find(Setting.plugin_zendesk_plugin['field'])
+    custom_field = CustomField.find(Setting.plugin_redmine_zendesk_ticket_updater['field'])
     return unless custom_field
     
     journal = context[:journal]
@@ -33,12 +33,12 @@ class ZendeskListener < Redmine::Hook::Listener
     zendesk_ids = zendesk_id_value.to_s.split(',').map(&:strip)
     return if zendesk_ids.empty?
     
-    Zendesk::Rest::Ticket.site = Setting.plugin_zendesk_plugin['zendesk_url']
-    Zendesk::Rest::Ticket.user = Setting.plugin_zendesk_plugin['zendesk_username']
-    Zendesk::Rest::Ticket.password = Setting.plugin_zendesk_plugin['zendesk_password']
+    Zendesk::Rest::Ticket.site = Setting.plugin_redmine_zendesk_ticket_updater['zendesk_url']
+    Zendesk::Rest::Ticket.user = Setting.plugin_redmine_zendesk_ticket_updater['zendesk_username']
+    Zendesk::Rest::Ticket.password = Setting.plugin_redmine_zendesk_ticket_updater['zendesk_password']
     
     zendesk_ids.each do |zendesk_id|
-      issue_url = "#{Setting.plugin_zendesk_plugin['redmine_url']}/issues/#{issue.id}"
+      issue_url = "#{Setting.plugin_redmine_zendesk_ticket_updater['redmine_url']}/issues/#{issue.id}"
       comment = "Redmine ticket #{issue_url} was updated by #{journal.user.name}:\n\n"
       
       for detail in journal.details
