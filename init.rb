@@ -8,7 +8,7 @@ Redmine::Plugin.register :redmine_zendesk_ticket_updater do
   description 'Updates associated Zendesk tickets when Redmine issues are updated'
   version '0.0.1'
   settings :default => {
-      'zendesk_url' => 'http://support.zendesk.com/',
+      'zendesk_subdomain' => 'http://support.zendesk.com/',
       'zendesk_username' => 'zendeskuser',
       'zendesk_password' => 'zendeskpassword',
       'field' => nil,

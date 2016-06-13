@@ -1,3 +1,3 @@
 source 'https://rubygems.org'
 
-gem 'activeresource'
+gem 'zendesk_api'
