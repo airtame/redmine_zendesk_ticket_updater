@@ -39,7 +39,7 @@ class ZendeskListener < Redmine::Hook::Listener
       issue_url = "#{Setting.plugin_redmine_zendesk_ticket_updater['redmine_url']}/issues/#{issue.id}"
       comment = "Redmine ticket #{issue_url} was updated by #{journal.user.name}:\n\n"
       
-      for detail in journal.details
+      journal.details.each do |detail|
         comment << show_detail(detail, true) rescue ""
         comment << "\n"
       end
